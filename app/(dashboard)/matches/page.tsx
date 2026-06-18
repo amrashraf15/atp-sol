@@ -1,8 +1,8 @@
 "use client";
 import { AppShell } from "@/components/ui/tennis/AppShell";
 import { MatchCard } from "@/components/ui/tennis/MatchCard";
-import { useSeason } from "@/lib/SeasonContext";
 import { matchesBySeason } from "@/lib/tennis-data";
+import { useSeason } from "@/lib/useSeason";
 
 
 

@@ -1,4 +1,17 @@
 import { mutation } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
+
+// =========================
+// Types
+// =========================
+
+type SeasonStatus = "Upcoming" | "Active" | "Completed";
+
+type SeasonSeed = {
+  year: number;
+  label: string;
+  status: SeasonStatus;
+};
 
 export const seed = mutation({
   args: {},
@@ -14,14 +27,24 @@ export const seed = mutation({
     }
 
     // =========================
-    // Season
+    // Seasons
     // =========================
 
-    const season2026 = await ctx.db.insert("seasons", {
-      year: 2026,
-      label: "2026 Season",
-      status: "Active",
-    });
+    const seasonsData: SeasonSeed[] = [
+      { year: 2026, label: "2026 Season", status: "Active" },
+      { year: 2027, label: "2027 Season", status: "Upcoming" },
+      { year: 2028, label: "2028 Season", status: "Upcoming" },
+      { year: 2029, label: "2029 Season", status: "Upcoming" },
+    ];
+
+    const seasonIds: Record<number, Id<"seasons">> = {};
+
+    for (const season of seasonsData) {
+      const id = await ctx.db.insert("seasons", season);
+      seasonIds[season.year] = id;
+    }
+
+    const season2026Id = seasonIds[2026];
 
     // =========================
     // Players
@@ -52,11 +75,11 @@ export const seed = mutation({
     });
 
     // =========================
-    // Initial Rankings
+    // Rankings (2026 only initial)
     // =========================
 
     await ctx.db.insert("rankings", {
-      seasonId: season2026,
+      seasonId: season2026Id,
       playerId: p1,
       rank: 1,
       points: 0,
@@ -66,7 +89,7 @@ export const seed = mutation({
     });
 
     await ctx.db.insert("rankings", {
-      seasonId: season2026,
+      seasonId: season2026Id,
       playerId: p2,
       rank: 2,
       points: 0,
@@ -76,7 +99,7 @@ export const seed = mutation({
     });
 
     // =========================
-    // Tournaments
+    // Tournaments (2026 season)
     // =========================
 
     const tournaments = [
@@ -227,11 +250,10 @@ export const seed = mutation({
 
     for (const tournament of tournaments) {
       await ctx.db.insert("tournaments", {
-        seasonId: season2026,
+        seasonId: season2026Id,
 
         name: tournament.name,
         shortName: tournament.shortName,
-
         city: tournament.city,
         country: tournament.country,
 
@@ -242,14 +264,17 @@ export const seed = mutation({
         endDate: tournament.endDate,
 
         status: "Upcoming",
-
         points: tournament.points,
       });
     }
 
+    // =========================
+    // Result
+    // =========================
+
     return {
       success: true,
-      season: 2026,
+      seasons: seasonsData.length,
       players: 2,
       rankings: 2,
       tournaments: tournaments.length,

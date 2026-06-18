@@ -1,18 +1,41 @@
 "use client";
+
 import { AppShell } from "@/components/ui/tennis/AppShell";
 import { TournamentCard } from "@/components/ui/tennis/TournamentCard";
-import { useSeason } from "@/lib/SeasonContext";
-import { tournamentsBySeason } from "@/lib/tennis-data";
+
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { toTournament } from "@/lib/mappers/tournamentMapper";
+import { useSeason } from "@/lib/useSeason";
+
 export default function TournamentsPage() {
   const { year } = useSeason();
 
-  const tours = tournamentsBySeason(year);
+  // 1. Get all seasons first
+  const seasons = useQuery(api.seasons.getAll);
 
-  const slams = tours.filter(
+  // 2. Find seasonId from year
+  const season = seasons?.find((s) => s.year === year);
+
+  // 3. Get tournaments by seasonId
+  const tournaments = useQuery(
+    api.tournaments.getBySeason,
+    season ? { seasonId: season._id } : "skip"
+  );
+
+  if (!seasons || !tournaments) {
+    return (
+      <AppShell title="Tournaments" eyebrow={`${year} Tour Calendar`}>
+        <div>Loading...</div>
+      </AppShell>
+    );
+  }
+
+  const slams = tournaments.filter(
     (t) => t.category === "Grand Slam"
   );
 
-  const masters = tours.filter(
+  const masters = tournaments.filter(
     (t) => t.category === "Masters 1000"
   );
 
@@ -32,7 +55,10 @@ export default function TournamentsPage() {
 
         <div className="grid gap-4 md:grid-cols-2">
           {slams.map((t) => (
-            <TournamentCard key={t.id} tournament={t} />
+            <TournamentCard
+              key={t._id}
+              tournament={toTournament(t, year)}
+            />
           ))}
         </div>
       </section>
@@ -51,7 +77,10 @@ export default function TournamentsPage() {
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {masters.map((t) => (
-            <TournamentCard key={t.id} tournament={t} />
+            <TournamentCard
+              key={t._id}
+              tournament={toTournament(t, year)}
+            />
           ))}
         </div>
       </section>

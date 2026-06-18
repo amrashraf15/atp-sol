@@ -22,16 +22,9 @@ import type * as rankings_helpers from "../rankings/helpers.js";
 import type * as rankings_mutations from "../rankings/mutations.js";
 import type * as rankings_queries from "../rankings/queries.js";
 import type * as rankings_recalculateRankings from "../rankings/recalculateRankings.js";
-import type * as seasons_helpers from "../seasons/helpers.js";
-import type * as seasons_mutations from "../seasons/mutations.js";
-import type * as seasons_queries from "../seasons/queries.js";
-import type * as seasons_seedSeason from "../seasons/seedSeason.js";
+import type * as seasons from "../seasons.js";
 import type * as seed from "../seed.js";
-import type * as tournaments_completeTournament from "../tournaments/completeTournament.js";
-import type * as tournaments_helpers from "../tournaments/helpers.js";
-import type * as tournaments_mutations from "../tournaments/mutations.js";
-import type * as tournaments_queries from "../tournaments/queries.js";
-import type * as tournaments_startTournament from "../tournaments/startTournament.js";
+import type * as tournaments from "../tournaments.js";
 
 import type {
   ApiFromModules,
@@ -54,16 +47,9 @@ declare const fullApi: ApiFromModules<{
   "rankings/mutations": typeof rankings_mutations;
   "rankings/queries": typeof rankings_queries;
   "rankings/recalculateRankings": typeof rankings_recalculateRankings;
-  "seasons/helpers": typeof seasons_helpers;
-  "seasons/mutations": typeof seasons_mutations;
-  "seasons/queries": typeof seasons_queries;
-  "seasons/seedSeason": typeof seasons_seedSeason;
+  seasons: typeof seasons;
   seed: typeof seed;
-  "tournaments/completeTournament": typeof tournaments_completeTournament;
-  "tournaments/helpers": typeof tournaments_helpers;
-  "tournaments/mutations": typeof tournaments_mutations;
-  "tournaments/queries": typeof tournaments_queries;
-  "tournaments/startTournament": typeof tournaments_startTournament;
+  tournaments: typeof tournaments;
 }>;
 
 /**
