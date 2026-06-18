@@ -21,7 +21,7 @@ type Props = {
   searchParams: { year?: string };
 };
 
-// ✅ SAFE metadata (fixes crash)
+
 export async function generateMetadata({
   params,
 }: Props): Promise<Metadata> {
