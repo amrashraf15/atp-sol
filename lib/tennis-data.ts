@@ -44,24 +44,42 @@ export interface Match {
   status: MatchStatus;
 }
 
-export interface Tournament {
+export type PlayerPreview = {
+  _id: string;
+  name: string;
+  shortName?: string;
+};
+
+export type Tournament = {
   id: string;
+
   name: string;
   shortName: string;
+
   city: string;
   country: string;
-  surface: Surface;
-  category: TournamentCategory;
+
+  surface: "Hard" | "Clay" | "Grass";
+  category: "Grand Slam" | "Masters 1000";
+
   startDate: string;
   endDate: string;
-  month: string;
+
   seasonYear: number;
+  month: string;
+
+  status: "Upcoming" | "In Progress" | "Completed";
+
+  points: number;
+
   championId?: string;
   runnerUpId?: string;
+
+  champion?: PlayerPreview | null;
+  runnerUp?: PlayerPreview | null;
+
   finalScore?: string;
-  status: "Completed" | "Upcoming";
-  points: number;
-}
+};
 
 export interface RankingRow {
   rank: number;

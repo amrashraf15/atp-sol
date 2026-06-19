@@ -17,18 +17,13 @@ export default function TournamentsPage() {
   const seasons = useQuery(api.seasons.getAll);
 
   // 2. Find current season
-  const season = seasons?.find(
-    (s) => s.year === year
-  );
+  const season = seasons?.find((s) => s.year === year);
 
   // 3. Load tournaments only if season exists
   const tournaments = useQuery(
     api.tournaments.getBySeason,
-    season
-      ? { seasonId: season._id }
-      : "skip"
+    season ? { seasonId: season._id } : "skip",
   );
-
 
   if (!seasons || !season || !tournaments) {
     return (
@@ -37,31 +32,23 @@ export default function TournamentsPage() {
         eyebrow={`${year} Tour Calendar`}
         actions={null}
       >
-        <div className="text-muted-foreground">
-          Loading...
-        </div>
+        <div className="text-muted-foreground">Loading...</div>
       </AppShell>
     );
   }
 
-  const slams = tournaments.filter(
-    (t) => t.category === "Grand Slam"
-  );
+  const slams = tournaments.filter((t) => t.category === "Grand Slam");
 
-  const masters = tournaments.filter(
-    (t) => t.category === "Masters 1000"
-  );
+  const masters = tournaments.filter((t) => t.category === "Masters 1000");
+
+  console.log("SLAMS:", slams);
+  
 
   return (
     <AppShell
       title="Tournaments"
       eyebrow={`${year} Tour Calendar`}
-      actions={
-        <AddTournamentDialog
-          seasonId={season._id} // ✅ now guaranteed
-          year={year}
-        />
-      }
+      actions={<AddTournamentDialog seasonId={season._id} year={year} />}
     >
       <section>
         <div className="mb-3 flex items-baseline gap-3">
@@ -76,10 +63,7 @@ export default function TournamentsPage() {
 
         <div className="grid gap-4 md:grid-cols-2">
           {slams.map((t) => (
-            <TournamentCard
-              key={t._id}
-              tournament={toTournament(t, year)}
-            />
+            <TournamentCard key={t._id} tournament={toTournament(t, year)} />
           ))}
         </div>
       </section>
@@ -97,10 +81,7 @@ export default function TournamentsPage() {
 
         <div className="grid gap-4 md:grid-cols-3">
           {masters.map((t) => (
-            <TournamentCard
-              key={t._id}
-              tournament={toTournament(t, year)}
-            />
+            <TournamentCard key={t._id} tournament={toTournament(t, year)} />
           ))}
         </div>
       </section>

@@ -6,6 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { AppShell } from "@/components/tennis/AppShell";
 import { MatchCard } from "@/components/tennis/MatchCard";
 import { useSeason } from "@/lib/useSeason";
+import { AddMatchDialog } from "@/components/matches/AddMatchDialog";
 
 export default function MatchesPage() {
   const { year } = useSeason();
@@ -14,7 +15,10 @@ export default function MatchesPage() {
     api.matches.getAllMatchesWithDetails
   );
 
-  if (!matches) {
+  const players = useQuery(api.players.getAll);
+  const tournaments = useQuery(api.tournaments.getAll);
+
+  if (!matches || !players || !tournaments) {
     return (
       <AppShell title="Matches">
         Loading...
@@ -30,6 +34,12 @@ export default function MatchesPage() {
     <AppShell
       title="Matches"
       eyebrow={`${year} · All finals`}
+      actions={
+        <AddMatchDialog
+          players={players}
+          tournaments={tournaments}
+        />
+      }
     >
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {sortedMatches.map((match) => (

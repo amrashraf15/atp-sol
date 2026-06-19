@@ -1,25 +1,54 @@
-import z from "zod";
+import { z } from "zod";
+
+export const MATCH_ROUNDS = [
+  "R32",
+  "R16",
+  "QF",
+  "SF",
+  "F",
+] as const;
 
 export const matchSchema = z
   .object({
-    tournamentId: z.string().min(1),
-    round: z.enum(["R32", "R16", "QF", "SF", "F"]),
-    date: z.string(),
+    tournamentId: z.string().min(1, "Tournament is required"),
 
-    player1Id: z.string().min(1),
-    player2Id: z.string().min(1),
+    round: z.enum(MATCH_ROUNDS),
 
-    winnerId: z.string().min(1),
+    date: z.string().min(1, "Date is required"),
 
-    set1P1: z.coerce.number().min(0),
-    set1P2: z.coerce.number().min(0),
+    player1Id: z.string().min(1, "Player 1 is required"),
 
-    set2P1: z.coerce.number().min(0),
-    set2P2: z.coerce.number().min(0),
+    player2Id: z.string().min(1, "Player 2 is required"),
 
-    durationMin: z.coerce.number().min(1),
+    winnerId: z.string().min(1, "Winner is required"),
+
+    score: z
+      .string()
+      .trim()
+      .min(3, "Score is required"),
+
+    durationMin: z
+      .number()
+      .int()
+      .min(1, "Duration must be greater than 0"),
   })
-  .refine((v) => v.player1Id !== v.player2Id, {
-    path: ["player2Id"],
-    message: "Players must differ",
-  });
+  .refine(
+    (v) => v.player1Id !== v.player2Id,
+    {
+      path: ["player2Id"],
+      message: "Players must differ",
+    }
+  )
+  .refine(
+    (v) =>
+      v.winnerId === v.player1Id ||
+      v.winnerId === v.player2Id,
+    {
+      path: ["winnerId"],
+      message:
+        "Winner must be one of the players",
+    }
+  );
+
+export type MatchFormValues =
+  z.infer<typeof matchSchema>;

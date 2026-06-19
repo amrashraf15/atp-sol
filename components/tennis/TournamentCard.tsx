@@ -1,56 +1,105 @@
 import Link from "next/link";
-
-import type { Tournament } from "@/lib/tennis-data";
-import { getPlayer } from "@/lib/tennis-data";
-
 import { SurfaceBadge } from "./SurfaceBadge";
-
-import {
-  Trophy,
-  MapPin,
-  Calendar,
-} from "lucide-react";
-
+import { Calendar, MapPin, Medal, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface TournamentCardProps {
-  tournament: Tournament;
+type PlayerPreview = {
+  _id?: string;
+  name: string;
+  shortName?: string;
+};
+
+type TournamentCardTournament = {
+  _id?: string;
+  id?: string;
+
+  seasonYear?: number;
+
+  name: string;
+  shortName?: string;
+  city: string;
+  country: string;
+
+  surface: "Hard" | "Clay" | "Grass";
+  category: "Grand Slam" | "Masters 1000";
+
+  startDate?: string;
+  month?: string;
+
+  status: "Upcoming" | "In Progress" | "Completed";
+
+  points: number;
+
+  champion?: PlayerPreview | null;
+  runnerUp?: PlayerPreview | null;
+
+  finalScore?: string;
+};
+
+function getId(t: TournamentCardTournament) {
+  return t._id ?? t.id;
+}
+
+function getMonth(t: TournamentCardTournament) {
+  if (t.month) return t.month;
+  if (!t.startDate) return "TBA";
+
+  const d = new Date(t.startDate);
+  return Number.isNaN(d.getTime())
+    ? "TBA"
+    : d.toLocaleString("en", { month: "short" });
+}
+
+function getPlayer(p?: PlayerPreview | null) {
+  return p?.name ?? p?.shortName ?? "TBD";
 }
 
 export function TournamentCard({
   tournament,
-}: TournamentCardProps) {
-  const champion = tournament.championId
-    ? getPlayer(tournament.championId)
-    : null;
+}: {
+  tournament: TournamentCardTournament;
+}) {
+  const id = getId(tournament);
+  const month = getMonth(tournament);
 
-  const isSlam =
-    tournament.category === "Grand Slam";
+  const champion = tournament.champion ?? null;
+  const runnerUp = tournament.runnerUp ?? null;
+  console.log("champion : ",champion)
+
+  const isCompleted = tournament.status === "Completed";
+  const isSlam = tournament.category === "Grand Slam";
+
+
+  const href = id
+    ? `/tournaments/${id}${
+        tournament.seasonYear
+          ? `?year=${tournament.seasonYear}`
+          : ""
+      }`
+    : "/tournaments";
 
   return (
     <Link
-      href={`/tournaments/${tournament.id}?year=${tournament.seasonYear}`}
+      href={href}
       className="group relative block overflow-hidden rounded-lg border border-border/60 bg-card/60 p-5 backdrop-blur transition-all hover:border-court/60 hover:bg-card"
     >
+      {/* glow */}
       <div
         className={cn(
-          "absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full opacity-20 blur-2xl transition-opacity group-hover:opacity-40",
-          isSlam
-            ? "bg-court"
-            : "bg-[oklch(0.7_0.14_50)]"
+          "absolute right-0 top-0 h-24 w-24 -translate-y-8 translate-x-8 rounded-full opacity-20 blur-2xl",
+          isSlam ? "bg-court" : "bg-[oklch(0.7_0.14_50)]"
         )}
       />
 
-      <div className="relative flex items-start justify-between">
+      {/* header */}
+      <div className="relative flex justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <SurfaceBadge
-              surface={tournament.surface}
-            />
+            <SurfaceBadge surface={tournament.surface} />
 
             <span
               className={cn(
-                "rounded-sm border px-2 py-0.5 text-[10px] uppercase tracking-[0.15em]",
+                "rounded-sm border px-2 py-0.5 text-[10px] uppercase",
                 isSlam
                   ? "border-court/50 bg-court/10 text-court"
                   : "border-border bg-muted/40 text-muted-foreground"
@@ -60,51 +109,68 @@ export function TournamentCard({
             </span>
           </div>
 
-          <h3 className="mt-3 font-display text-2xl uppercase tracking-wide">
+          <h3 className="mt-3 font-display text-2xl uppercase">
             {tournament.name}
           </h3>
 
-          <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1">
+          <div className="mt-1 flex gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
               <MapPin className="size-3" />
-              {tournament.city},{" "}
-              {tournament.country}
+              {tournament.city}, {tournament.country}
             </span>
 
-            <span className="inline-flex items-center gap-1">
+            <span className="flex items-center gap-1">
               <Calendar className="size-3" />
-              {tournament.month}
+              {month}
             </span>
           </div>
         </div>
 
         <div className="text-right">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          <div className="text-[10px] uppercase text-muted-foreground">
             {tournament.status}
           </div>
-
           <div className="mt-1 font-display text-lg text-court">
             {tournament.points} pts
           </div>
         </div>
       </div>
 
-      {champion ? (
-        <div className="relative mt-5 flex items-center justify-between rounded-md border border-border/40 bg-background/50 px-3 py-2">
-          <div className="flex items-center gap-2">
-            <Trophy className="size-4 text-court" />
+      {/* RESULT */}
+      {isCompleted && champion ? (
+        <div className="mt-5 space-y-2 rounded-md border border-border/40 bg-background/50 px-3 py-3">
+          <div className="flex justify-between">
+            <div className="flex items-center gap-2">
+              <Trophy className="size-4 text-court" />
+              <span className="text-sm font-medium">
+                {getPlayer(champion)}
+              </span>
+            </div>
 
-            <span className="text-sm font-medium">
-              {champion.shortName}
-            </span>
+            {tournament.finalScore && (
+              <span className="text-xs font-mono text-muted-foreground">
+                {tournament.finalScore}
+              </span>
+            )}
           </div>
 
-          <span className="font-mono text-xs text-muted-foreground">
-            {tournament.finalScore}
-          </span>
+          {runnerUp && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Medal className="size-3.5" />
+              Runner-up: {getPlayer(runnerUp)}
+            </div>
+          )}
+        </div>
+      ) : isCompleted ? (
+        <div className="mt-5 text-center text-xs text-muted-foreground">
+          Completed
+        </div>
+      ) : tournament.status === "In Progress" ? (
+        <div className="mt-5 text-center text-xs text-muted-foreground">
+          Tournament in progress
         </div>
       ) : (
-        <div className="relative mt-5 rounded-md border border-dashed border-border/40 px-3 py-2 text-center text-xs text-muted-foreground">
+        <div className="mt-5 text-center text-xs text-muted-foreground">
           Upcoming · Draw to be released
         </div>
       )}
