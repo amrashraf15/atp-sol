@@ -3,9 +3,9 @@
 import { tournamentsBySeason, getPlayer } from "@/lib/tennis-data";
 import Link from "next/link";
 import { Trophy } from "lucide-react";
-import { AppShell } from "@/components/ui/tennis/AppShell";
-import { useSeason } from "@/lib/SeasonContext";
-import { SurfaceBadge } from "@/components/ui/tennis/SurfaceBadge";
+import { AppShell } from "@/components/tennis/AppShell";
+import { SurfaceBadge } from "@/components/tennis/SurfaceBadge";
+import { useSeason } from "@/lib/useSeason";
 
 const MONTHS = [
   "January",
@@ -34,7 +34,7 @@ export default function ScheduleClient() {
   return (
     <AppShell title="Schedule" eyebrow={`${year} Season Calendar`}>
       <div className="relative">
-        <div className="absolute left-4 top-0 bottom-0 hidden w-px bg-gradient-to-b from-court/40 via-border to-transparent md:block" />
+        <div className="absolute left-4 top-0 bottom-0 hidden w-px bg-linear-to-b from-court/40 via-border to-transparent md:block" />
 
         <div className="space-y-8">
           {byMonth.map(({ month, items }) => (

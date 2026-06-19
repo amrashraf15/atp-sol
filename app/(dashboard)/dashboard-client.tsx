@@ -11,8 +11,6 @@ import {
   rankingsForSeason,
   tournamentsBySeason,
 } from "@/lib/tennis-data";
-
-
 import {
   Crown,
   Swords,
@@ -21,15 +19,15 @@ import {
   Flame,
   Trophy,
 } from "lucide-react";
-import { useSeason } from "@/lib/SeasonContext";
-import { AppShell } from "@/components/ui/tennis/AppShell";
-import { PlayerAvatar } from "@/components/ui/tennis/PlayerAvatar";
-import { SurfaceBadge } from "@/components/ui/tennis/SurfaceBadge";
-import { RankingMovement } from "@/components/ui/tennis/RankingMovement";
-import { MatchCard } from "@/components/ui/tennis/MatchCard";
-import { StatsCard } from "@/components/ui/tennis/StatsCard";
-import { PointsProgressionChart } from "@/components/ui/tennis/Charts";
-import { TournamentCard } from "@/components/ui/tennis/TournamentCard";
+import { AppShell } from "@/components/tennis/AppShell";
+import { PlayerAvatar } from "@/components/tennis/PlayerAvatar";
+import { SurfaceBadge } from "@/components/tennis/SurfaceBadge";
+import { RankingMovement } from "@/components/tennis/RankingMovement";
+import { MatchCard } from "@/components/tennis/MatchCard";
+import { StatsCard } from "@/components/tennis/StatsCard";
+import { PointsProgressionChart } from "@/components/tennis/Charts";
+import { TournamentCard } from "@/components/tennis/TournamentCard";
+import { useSeason } from "@/lib/useSeason";
 
 export default function DashboardClient() {
   const { year } = useSeason();
@@ -97,8 +95,8 @@ export default function DashboardClient() {
     <AppShell title="Dashboard" eyebrow={`${year} Season · Live`}>
       {/* HERO */}
       <section className="grid gap-4 lg:grid-cols-3">
-        <div className="relative col-span-2 overflow-hidden rounded-xl border border-court/40 bg-gradient-to-br from-card via-card to-background p-6 court-grid">
-          <div className="absolute inset-0 bg-gradient-to-tr from-court/20 via-transparent to-transparent" />
+        <div className="relative col-span-2 overflow-hidden rounded-xl border border-court/40 bg-linear-to-br from-card via-card to-background p-6 court-grid">
+          <div className="absolute inset-0 bg-linear-to-tr from-court/20 via-transparent to-transparent" />
 
           <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>

@@ -2,16 +2,17 @@
 
 
 
-import { AppShell } from "@/components/ui/tennis/AppShell";
-import { RankingProgressionChart } from "@/components/ui/tennis/Charts";
-import { PlayerAvatar } from "@/components/ui/tennis/PlayerAvatar";
-import { RankingMovement } from "@/components/ui/tennis/RankingMovement";
-import { useSeason } from "@/lib/SeasonContext";
+import { AppShell } from "@/components/tennis/AppShell";
+import { RankingProgressionChart } from "@/components/tennis/Charts";
+import { PlayerAvatar } from "@/components/tennis/PlayerAvatar";
+import { RankingMovement } from "@/components/tennis/RankingMovement";
+
 import {
   getPlayer,
   rankingsForSeason,
   tournamentsBySeason,
 } from "@/lib/tennis-data";
+import { useSeason } from "@/lib/useSeason";
 
 
 

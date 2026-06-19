@@ -1,5 +1,8 @@
-import type { Player } from "@/lib/tennis-data";
+
+import { Doc } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
+
+type Player = Doc<"players">;
 
 export function PlayerAvatar({
   player,

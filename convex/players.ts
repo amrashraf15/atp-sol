@@ -1,6 +1,39 @@
-import { mutation } from "../_generated/server";
 import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+import { Doc } from "./_generated/dataModel";
 
+export const getAll = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("players")
+      .withIndex("by_name")
+      .collect();
+  },
+});
+
+export const getById = query({
+  args: {
+    playerId: v.id("players"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.playerId);
+  },
+});
+
+export const getByCountry = query({
+  args: {
+    countryCode: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("players")
+      .withIndex("by_country", (q) =>
+        q.eq("countryCode", args.countryCode)
+      )
+      .collect();
+  },
+});
 export const create = mutation({
   args: {
     name: v.string(),
@@ -42,3 +75,9 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+export function playerDisplayName(
+  player: Doc<"players">
+) {
+  return `${player.name} (${player.countryCode})`;
+}

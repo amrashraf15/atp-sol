@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 
 import { ConvexClientProvider } from "../ConvexClientProvider";
+import { Toaster } from "sonner";
 
 
 
@@ -33,7 +34,10 @@ export default function RootLayout({
     >
       
         <ConvexClientProvider>
-        <body className="min-h-full flex flex-col">{children}</body>
+        <body className="min-h-full flex flex-col">
+          {children}
+        <Toaster richColors position="top-right" />
+        </body>
         </ConvexClientProvider>
     
     </html>

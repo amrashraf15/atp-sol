@@ -8,22 +8,19 @@
  * @module
  */
 
+import type * as h2h from "../h2h.js";
 import type * as lib_ranking from "../lib/ranking.js";
 import type * as lib_scoring from "../lib/scoring.js";
 import type * as lib_validation from "../lib/validation.js";
-import type * as matches_finishMatch from "../matches/finishMatch.js";
-import type * as matches_helpers from "../matches/helpers.js";
-import type * as matches_mutations from "../matches/mutations.js";
-import type * as matches_queries from "../matches/queries.js";
-import type * as players_helpers from "../players/helpers.js";
-import type * as players_mutations from "../players/mutations.js";
-import type * as players_queries from "../players/queries.js";
+import type * as matches from "../matches.js";
+import type * as players from "../players.js";
 import type * as rankings_helpers from "../rankings/helpers.js";
 import type * as rankings_mutations from "../rankings/mutations.js";
 import type * as rankings_queries from "../rankings/queries.js";
 import type * as rankings_recalculateRankings from "../rankings/recalculateRankings.js";
 import type * as seasons from "../seasons.js";
 import type * as seed from "../seed.js";
+import type * as stats from "../stats.js";
 import type * as tournaments from "../tournaments.js";
 
 import type {
@@ -33,22 +30,19 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  h2h: typeof h2h;
   "lib/ranking": typeof lib_ranking;
   "lib/scoring": typeof lib_scoring;
   "lib/validation": typeof lib_validation;
-  "matches/finishMatch": typeof matches_finishMatch;
-  "matches/helpers": typeof matches_helpers;
-  "matches/mutations": typeof matches_mutations;
-  "matches/queries": typeof matches_queries;
-  "players/helpers": typeof players_helpers;
-  "players/mutations": typeof players_mutations;
-  "players/queries": typeof players_queries;
+  matches: typeof matches;
+  players: typeof players;
   "rankings/helpers": typeof rankings_helpers;
   "rankings/mutations": typeof rankings_mutations;
   "rankings/queries": typeof rankings_queries;
   "rankings/recalculateRankings": typeof rankings_recalculateRankings;
   seasons: typeof seasons;
   seed: typeof seed;
+  stats: typeof stats;
   tournaments: typeof tournaments;
 }>;
 

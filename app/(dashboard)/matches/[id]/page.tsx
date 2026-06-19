@@ -9,9 +9,9 @@ import {
 
 import { ArrowLeft, Clock, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AppShell } from "@/components/ui/tennis/AppShell";
-import { SurfaceBadge } from "@/components/ui/tennis/SurfaceBadge";
-import { PlayerAvatar } from "@/components/ui/tennis/PlayerAvatar";
+import { AppShell } from "@/components/tennis/AppShell";
+import { SurfaceBadge } from "@/components/tennis/SurfaceBadge";
+import { PlayerAvatar } from "@/components/tennis/PlayerAvatar";
 
 type Props = {
   params: Promise<{ id: string }>;

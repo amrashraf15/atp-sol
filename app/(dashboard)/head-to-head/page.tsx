@@ -7,10 +7,10 @@ import {
   headToHead,
   PLAYERS,
 } from "@/lib/tennis-data";
-import { AppShell } from "@/components/ui/tennis/AppShell";
-import { PlayerAvatar } from "@/components/ui/tennis/PlayerAvatar";
-import { MatchCard } from "@/components/ui/tennis/MatchCard";
-import { H2HBarChart } from "@/components/ui/tennis/Charts";
+import { AppShell } from "@/components/tennis/AppShell";
+import { PlayerAvatar } from "@/components/tennis/PlayerAvatar";
+import { MatchCard } from "@/components/tennis/MatchCard";
+import { H2HBarChart } from "@/components/tennis/Charts";
 
 
 export default function HeadToHeadPage() {

@@ -1,17 +1,26 @@
-import type { Metadata } from "next";
+"use client"
 
 import { Switch } from "@/components/ui/switch";
-import { PLAYERS } from "@/lib/tennis-data";
-import { AppShell } from "@/components/ui/tennis/AppShell";
-import { PlayerAvatar } from "@/components/ui/tennis/PlayerAvatar";
+import { AppShell } from "@/components/tennis/AppShell";
+import { PlayerAvatar } from "@/components/tennis/PlayerAvatar";
+import { AddPlayerDialog } from "@/components/players/AddPlayerDialog";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
-export const metadata: Metadata = {
-  title: "Settings — ATP Rivalry",
-};
+
 
 export default function SettingsPage() {
+  const players = useQuery(api.players.getAll)
+
+  if (!players) {
+    return (
+      <AppShell title="Matches">
+        Loading...
+      </AppShell>
+    );
+  }
   return (
-    <AppShell title="Settings" eyebrow="Configuration">
+    <AppShell title="Settings" eyebrow="Configuration" actions={<AddPlayerDialog />}>
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Players */}
         <div className="lg:col-span-2 rounded-xl border border-border/60 bg-card/60 p-5">
@@ -20,13 +29,13 @@ export default function SettingsPage() {
           </h3>
 
           <p className="text-xs text-muted-foreground">
-            The two competitors of the rivalry tour.
+            The All competitors of the rivalry tour.
           </p>
 
           <div className="mt-4 space-y-3">
-            {PLAYERS.map((p) => (
+            {players.map((p) => (
               <div
-                key={p.id}
+                key={p._id}
                 className="flex items-center gap-4 rounded-md border border-border/40 bg-background/40 p-4"
               >
                 <PlayerAvatar player={p} size="lg" />
@@ -72,16 +81,6 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-border/60 bg-card/60 p-5">
-            <h3 className="font-display text-lg uppercase tracking-wide">
-              Data
-            </h3>
-
-            <p className="mt-2 text-xs text-muted-foreground">
-              Mock data is currently in use. Connect Convex to persist seasons,
-              matches and live results.
-            </p>
-          </div>
         </div>
       </div>
     </AppShell>

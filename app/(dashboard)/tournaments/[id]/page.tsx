@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
-import { AppShell } from "@/components/ui/tennis/AppShell";
-import { SurfaceBadge } from "@/components/ui/tennis/SurfaceBadge";
-import { PlayerAvatar } from "@/components/ui/tennis/PlayerAvatar";
-import { MatchCard } from "@/components/ui/tennis/MatchCard";
+import { AppShell } from "@/components/tennis/AppShell";
+import { SurfaceBadge } from "@/components/tennis/SurfaceBadge";
+import { PlayerAvatar } from "@/components/tennis/PlayerAvatar";
+import { MatchCard } from "@/components/tennis/MatchCard";
 
 import {
   ALL_MATCHES,

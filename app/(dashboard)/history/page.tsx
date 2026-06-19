@@ -1,5 +1,5 @@
 
-import { AppShell } from "@/components/ui/tennis/AppShell";
+import { AppShell } from "@/components/tennis/AppShell";
 import {
   ALL_TOURNAMENTS,
   getPlayer,

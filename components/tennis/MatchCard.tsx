@@ -1,35 +1,55 @@
 import Link from "next/link";
 
-import type { Match } from "@/lib/tennis-data";
-import { ALL_TOURNAMENTS, getPlayer } from "@/lib/tennis-data";
-
-
-
 import { Clock, Trophy } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { SurfaceBadge } from "./SurfaceBadge";
 
 interface MatchCardProps {
-  match: Match;
+  match: {
+    _id: string;
+
+    round: string;
+    date: string;
+
+    player1Id: string;
+    player2Id: string;
+    winnerId: string;
+
+    durationMin: number;
+
+    sets: {
+      p1: number;
+      p2: number;
+    }[];
+
+    player1: {
+      name: string;
+      shortName: string;
+      color: string;
+    } | null;
+
+    player2: {
+      name: string;
+      shortName: string;
+      color: string;
+    } | null;
+
+    tournament: {
+      shortName: string;
+      surface: "Hard" | "Clay" | "Grass";
+    } | null;
+  };
 }
 
-export function MatchCard({ match }: MatchCardProps) {
-  const year = Number.parseInt(
-    match.date.slice(0, 4),
-    10
-  );
-
-  const tournament = ALL_TOURNAMENTS.find(
-    (t) =>
-      t.id === match.tournamentId &&
-      t.seasonYear === year
-  );
-
-  const player1 = getPlayer(match.player1Id);
-  const player2 = getPlayer(match.player2Id);
-
-  if (!tournament || !player1 || !player2) {
+export function MatchCard({
+  match,
+}: MatchCardProps) {
+  if (
+    !match.player1 ||
+    !match.player2 ||
+    !match.tournament
+  ) {
     return null;
   }
 
@@ -38,12 +58,12 @@ export function MatchCard({ match }: MatchCardProps) {
 
   const rows = [
     {
-      player: player1,
+      player: match.player1,
       winner: winnerIsPlayer1,
       sets: match.sets.map((set) => set.p1),
     },
     {
-      player: player2,
+      player: match.player2,
       winner: !winnerIsPlayer1,
       sets: match.sets.map((set) => set.p2),
     },
@@ -51,17 +71,17 @@ export function MatchCard({ match }: MatchCardProps) {
 
   return (
     <Link
-      href={`/matches/${match.id}`}
+      href={`/matches/${match._id}`}
       className="group block rounded-lg border border-border/60 bg-card/60 p-4 transition-colors hover:border-court/50"
     >
       <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
         <div className="flex items-center gap-2">
           <SurfaceBadge
-            surface={tournament.surface}
+            surface={match.tournament.surface}
           />
 
           <span className="font-display">
-            {tournament.shortName}
+            {match.tournament.shortName}
           </span>
 
           <span>·</span>

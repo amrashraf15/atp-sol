@@ -1,32 +1,45 @@
 "use client";
 
-import { AppShell } from "@/components/ui/tennis/AppShell";
-import { TournamentCard } from "@/components/ui/tennis/TournamentCard";
+import { AppShell } from "@/components/tennis/AppShell";
+import { TournamentCard } from "@/components/tennis/TournamentCard";
+import { AddTournamentDialog } from "@/components/tournaments/AddTournamentDialog";
 
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { toTournament } from "@/lib/mappers/tournamentMapper";
+
 import { useSeason } from "@/lib/useSeason";
+import { toTournament } from "@/lib/mappers/tournamentMapper";
 
 export default function TournamentsPage() {
   const { year } = useSeason();
 
-  // 1. Get all seasons first
+  // 1. Load seasons
   const seasons = useQuery(api.seasons.getAll);
 
-  // 2. Find seasonId from year
-  const season = seasons?.find((s) => s.year === year);
-
-  // 3. Get tournaments by seasonId
-  const tournaments = useQuery(
-    api.tournaments.getBySeason,
-    season ? { seasonId: season._id } : "skip"
+  // 2. Find current season
+  const season = seasons?.find(
+    (s) => s.year === year
   );
 
-  if (!seasons || !tournaments) {
+  // 3. Load tournaments only if season exists
+  const tournaments = useQuery(
+    api.tournaments.getBySeason,
+    season
+      ? { seasonId: season._id }
+      : "skip"
+  );
+
+
+  if (!seasons || !season || !tournaments) {
     return (
-      <AppShell title="Tournaments" eyebrow={`${year} Tour Calendar`}>
-        <div>Loading...</div>
+      <AppShell
+        title="Tournaments"
+        eyebrow={`${year} Tour Calendar`}
+        actions={null}
+      >
+        <div className="text-muted-foreground">
+          Loading...
+        </div>
       </AppShell>
     );
   }
@@ -40,8 +53,16 @@ export default function TournamentsPage() {
   );
 
   return (
-    <AppShell title="Tournaments" eyebrow={`${year} Tour Calendar`}>
-      {/* Grand Slams */}
+    <AppShell
+      title="Tournaments"
+      eyebrow={`${year} Tour Calendar`}
+      actions={
+        <AddTournamentDialog
+          seasonId={season._id} // ✅ now guaranteed
+          year={year}
+        />
+      }
+    >
       <section>
         <div className="mb-3 flex items-baseline gap-3">
           <h2 className="font-display text-2xl uppercase tracking-wide">
@@ -63,7 +84,6 @@ export default function TournamentsPage() {
         </div>
       </section>
 
-      {/* Masters */}
       <section className="mt-8">
         <div className="mb-3 flex items-baseline gap-3">
           <h2 className="font-display text-2xl uppercase tracking-wide">
@@ -75,7 +95,7 @@ export default function TournamentsPage() {
           </span>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3">
           {masters.map((t) => (
             <TournamentCard
               key={t._id}

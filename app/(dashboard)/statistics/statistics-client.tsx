@@ -1,9 +1,8 @@
 "use client";
-import { AppShell } from "@/components/ui/tennis/AppShell";
-import { H2HBarChart, PointsProgressionChart } from "@/components/ui/tennis/Charts";
-import { PlayerAvatar } from "@/components/ui/tennis/PlayerAvatar";
-import { StatsCard } from "@/components/ui/tennis/StatsCard";
-import { useSeason } from "@/lib/SeasonContext";
+import { AppShell } from "@/components/tennis/AppShell";
+import { H2HBarChart, PointsProgressionChart } from "@/components/tennis/Charts";
+import { PlayerAvatar } from "@/components/tennis/PlayerAvatar";
+import { StatsCard } from "@/components/tennis/StatsCard";
 import {
   ALL_MATCHES,
   ALL_TOURNAMENTS,
@@ -13,6 +12,7 @@ import {
   SEASONS,
   tournamentsBySeason,
 } from "@/lib/tennis-data";
+import { useSeason } from "@/lib/useSeason";
 import {
   Activity,
   Flame,
