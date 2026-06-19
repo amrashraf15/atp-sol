@@ -278,7 +278,7 @@ export default function DashboardClient() {
         </div>
       </section>
       {/* Stats */}
-      <section className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatsCard
           label="Season Titles"
           value={tours.filter((t) => t.status === "Completed").length}
@@ -290,12 +290,6 @@ export default function DashboardClient() {
           value={seasonMatches.length}
           hint="Finals on record"
           icon={<Activity className="size-4" />}
-        />
-        <StatsCard
-          label="Win Streak"
-          value="6"
-          hint={`${no1.shortName} · active`}
-          icon={<Flame className="size-4" />}
         />
         <StatsCard
           label="Total Rivalry"

@@ -13,13 +13,11 @@ export const getTournamentMatches = query({
     return await ctx.db
       .query("matches")
       .withIndex("by_tournament", (q) =>
-        q.eq("tournamentId", args.tournamentId)
+        q.eq("tournamentId", args.tournamentId),
       )
       .collect();
   },
 });
-
-
 
 export const getAllMatchesWithDetails = query({
   args: {},
@@ -35,8 +33,7 @@ export const getAllMatchesWithDetails = query({
       player1: players.find((p) => p._id === m.player1Id) ?? null,
       player2: players.find((p) => p._id === m.player2Id) ?? null,
 
-      tournament:
-        tournaments.find((t) => t._id === m.tournamentId) ?? null,
+      tournament: tournaments.find((t) => t._id === m.tournamentId) ?? null,
     }));
   },
 });
@@ -50,7 +47,7 @@ export const getTournamentMatchesWithDetails = query({
     const matches = await ctx.db
       .query("matches")
       .withIndex("by_tournament", (q) =>
-        q.eq("tournamentId", args.tournamentId)
+        q.eq("tournamentId", args.tournamentId),
       )
       .collect();
 
@@ -61,7 +58,7 @@ export const getTournamentMatchesWithDetails = query({
         player1: await ctx.db.get(match.player1Id),
         player2: await ctx.db.get(match.player2Id),
         tournament: await ctx.db.get(match.tournamentId),
-      }))
+      })),
     );
   },
 });
@@ -77,8 +74,7 @@ export const create = mutation({
       status,
     });
 
-    const isFinalCompleted =
-      args.round === "F" && status === "Completed";
+    const isFinalCompleted = args.round === "F" && status === "Completed";
 
     if (!isFinalCompleted) return matchId;
 
@@ -92,21 +88,14 @@ export const create = mutation({
       throw new Error("Winner is required for completed final match");
     }
 
-    if (
-      args.winnerId !== args.player1Id &&
-      args.winnerId !== args.player2Id
-    ) {
+    if (args.winnerId !== args.player1Id && args.winnerId !== args.player2Id) {
       throw new Error("Winner must be either player1 or player2");
     }
 
     const runnerUpId =
-      args.winnerId === args.player1Id
-        ? args.player2Id
-        : args.player1Id;
+      args.winnerId === args.player1Id ? args.player2Id : args.player1Id;
 
-    const finalScore = args.sets
-      .map((set) => `${set.p1}-${set.p2}`)
-      .join(", ");
+    const finalScore = args.sets.map((set) => `${set.p1}-${set.p2}`).join(", ");
 
     await ctx.db.patch(args.tournamentId, {
       championId: args.winnerId,
@@ -126,36 +115,52 @@ export const create = mutation({
       throw new Error(`Season ${seasonYear} not found`);
     }
 
-    const ranking = await ctx.db
+    // =========================
+    // Update Rankings
+    // =========================
+
+    // Champion ranking
+    const winnerRanking = await ctx.db
       .query("rankings")
       .withIndex("by_season_player", (q) =>
-        q.eq("seasonId", season._id).eq("playerId", args.winnerId)
+        q.eq("seasonId", season._id).eq("playerId", args.winnerId),
       )
       .unique();
 
-    if (ranking) {
-      await ctx.db.patch(ranking._id, {
-        points: ranking.points + tournament.points,
-        titles: ranking.titles + 1,
+    if (winnerRanking) {
+      await ctx.db.patch(winnerRanking._id, {
+        points: winnerRanking.points + tournament.points,
+
+        titles: winnerRanking.titles + 1,
+
+        matchesWon: winnerRanking.matchesWon + 1,
       });
     }
 
+    // Runner-up ranking
+
+    const runnerUpRanking = await ctx.db
+      .query("rankings")
+      .withIndex("by_season_player", (q) =>
+        q.eq("seasonId", season._id).eq("playerId", runnerUpId),
+      )
+      .unique();
+
+    if (runnerUpRanking) {
+      await ctx.db.patch(runnerUpRanking._id, {
+        matchesLost: runnerUpRanking.matchesLost + 1,
+      });
+    }
     return matchId;
   },
 });
-export function getWinner(
-  match: Doc<"matches">
-) {
+export function getWinner(match: Doc<"matches">) {
   return match.winnerId;
 }
 
-export function totalSetsWon(
-  match: Doc<"matches">,
-  player: 1 | 2
-) {
-  return match.sets.filter((s) =>
-    player === 1 ? s.p1 > s.p2 : s.p2 > s.p1
-  ).length;
+export function totalSetsWon(match: Doc<"matches">, player: 1 | 2) {
+  return match.sets.filter((s) => (player === 1 ? s.p1 > s.p2 : s.p2 > s.p1))
+    .length;
 }
 
 export const finishMatch = internalMutation({
@@ -166,7 +171,7 @@ export const finishMatch = internalMutation({
       v.object({
         p1: v.number(),
         p2: v.number(),
-      })
+      }),
     ),
     durationMin: v.number(),
   },
@@ -194,13 +199,9 @@ export const finishMatch = internalMutation({
     }
 
     const runnerUpId =
-      args.winnerId === match.player1Id
-        ? match.player2Id
-        : match.player1Id;
+      args.winnerId === match.player1Id ? match.player2Id : match.player1Id;
 
-    const finalScore = args.sets
-      .map((set) => `${set.p1}-${set.p2}`)
-      .join(", ");
+    const finalScore = args.sets.map((set) => `${set.p1}-${set.p2}`).join(", ");
 
     await ctx.db.patch(match.tournamentId, {
       championId: args.winnerId,
@@ -208,5 +209,30 @@ export const finishMatch = internalMutation({
       finalScore,
       status: "Completed",
     });
+  },
+});
+
+export const getMatchDetails = query({
+  args: {
+    matchId: v.id("matches"),
+  },
+
+  handler: async (ctx, args) => {
+    const match = await ctx.db.get(args.matchId);
+
+    if (!match) return null;
+
+    const player1 = await ctx.db.get(match.player1Id);
+    const player2 = await ctx.db.get(match.player2Id);
+    const winner = await ctx.db.get(match.winnerId);
+    const tournament = await ctx.db.get(match.tournamentId);
+
+    return {
+      ...match,
+      player1,
+      player2,
+      winner,
+      tournament,
+    };
   },
 });

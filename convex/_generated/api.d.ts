@@ -10,15 +10,13 @@
 
 import type * as dashboard from "../dashboard.js";
 import type * as h2h from "../h2h.js";
+import type * as history from "../history.js";
 import type * as lib_ranking from "../lib/ranking.js";
 import type * as lib_scoring from "../lib/scoring.js";
 import type * as lib_validation from "../lib/validation.js";
 import type * as matches from "../matches.js";
 import type * as players from "../players.js";
-import type * as rankings_helpers from "../rankings/helpers.js";
-import type * as rankings_mutations from "../rankings/mutations.js";
-import type * as rankings_queries from "../rankings/queries.js";
-import type * as rankings_recalculateRankings from "../rankings/recalculateRankings.js";
+import type * as rankings from "../rankings.js";
 import type * as seasons from "../seasons.js";
 import type * as seed from "../seed.js";
 import type * as stats from "../stats.js";
@@ -33,15 +31,13 @@ import type {
 declare const fullApi: ApiFromModules<{
   dashboard: typeof dashboard;
   h2h: typeof h2h;
+  history: typeof history;
   "lib/ranking": typeof lib_ranking;
   "lib/scoring": typeof lib_scoring;
   "lib/validation": typeof lib_validation;
   matches: typeof matches;
   players: typeof players;
-  "rankings/helpers": typeof rankings_helpers;
-  "rankings/mutations": typeof rankings_mutations;
-  "rankings/queries": typeof rankings_queries;
-  "rankings/recalculateRankings": typeof rankings_recalculateRankings;
+  rankings: typeof rankings;
   seasons: typeof seasons;
   seed: typeof seed;
   stats: typeof stats;
