@@ -71,8 +71,8 @@ export default async function MatchDetailPage({ params }: Props) {
         <ArrowLeft className="size-3" /> All matches
       </Link>
 
-      <div className="relative overflow-hidden rounded-xl border border-court/30 bg-gradient-to-br from-card to-background p-8 court-grid">
-        <div className="absolute inset-0 bg-gradient-to-r from-court/10 via-transparent to-[oklch(0.72_0.16_50/0.10)]" />
+      <div className="relative overflow-hidden rounded-xl border border-court/30 bg-linear-to-br from-card to-background p-8 court-grid">
+        <div className="absolute inset-0 bg-linear-to-r from-court/10 via-transparent to-[oklch(0.72_0.16_50/0.10)]" />
 
         <div className="relative flex items-center justify-between gap-4">
           <SurfaceBadge surface={t.surface} />

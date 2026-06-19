@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as dashboard from "../dashboard.js";
 import type * as h2h from "../h2h.js";
 import type * as lib_ranking from "../lib/ranking.js";
 import type * as lib_scoring from "../lib/scoring.js";
@@ -30,6 +31,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  dashboard: typeof dashboard;
   h2h: typeof h2h;
   "lib/ranking": typeof lib_ranking;
   "lib/scoring": typeof lib_scoring;

@@ -2,15 +2,8 @@
 
 import Link from "next/link";
 
-
-
-import {
-  ALL_MATCHES,
-  getPlayer,
-  headToHead,
-  rankingsForSeason,
-  tournamentsBySeason,
-} from "@/lib/tennis-data";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import {
   Crown,
   Swords,
@@ -22,74 +15,80 @@ import {
 import { AppShell } from "@/components/tennis/AppShell";
 import { PlayerAvatar } from "@/components/tennis/PlayerAvatar";
 import { SurfaceBadge } from "@/components/tennis/SurfaceBadge";
-import { RankingMovement } from "@/components/tennis/RankingMovement";
 import { MatchCard } from "@/components/tennis/MatchCard";
 import { StatsCard } from "@/components/tennis/StatsCard";
-import { PointsProgressionChart } from "@/components/tennis/Charts";
 import { TournamentCard } from "@/components/tennis/TournamentCard";
 import { useSeason } from "@/lib/useSeason";
 
 export default function DashboardClient() {
   const { year } = useSeason();
 
-  const rankings = rankingsForSeason(year);
-  const no1 = getPlayer(rankings[0].playerId);
+  const seasons = useQuery(api.seasons.getAll);
 
-  const seasonMatches = ALL_MATCHES
+  const season = seasons?.find((s) => s.year === year);
+
+  const dashboard = useQuery(
+    api.dashboard.getDashboardData,
+    season ? { seasonId: season._id } : "skip",
+  );
+
+  if (!season || !dashboard) {
+    return (
+      <AppShell title="Dashboard" eyebrow={`${year} Season`}>
+        Loading...
+      </AppShell>
+    );
+  }
+
+  const rankings = dashboard.rankings;
+
+  if (!dashboard || rankings.length === 0 || !rankings[0]?.player) {
+    return <div>Loading...</div>;
+  }
+
+  const no1 = rankings[0].player;
+  const tours = dashboard.tournaments;
+  const player1 = rankings[0]?.player;
+  const player2 = rankings[1]?.player;
+
+  const h2h = {
+    total: 0,
+    p1Wins: 0,
+    p2Wins: 0,
+  };
+
+  if (player1 && player2) {
+    dashboard.matches.forEach((match) => {
+      const isH2H =
+        (match.player1Id === player1._id && match.player2Id === player2._id) ||
+        (match.player1Id === player2._id && match.player2Id === player1._id);
+
+      if (!isH2H) return;
+
+      h2h.total++;
+
+      if (match.winnerId === player1._id) {
+        h2h.p1Wins++;
+      }
+
+      if (match.winnerId === player2._id) {
+        h2h.p2Wins++;
+      }
+    });
+  }
+
+  const seasonMatches = dashboard.matches
     .filter((m) => m.date.startsWith(String(year)))
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 
   const latest = seasonMatches[0];
 
-  const tours = tournamentsBySeason(year);
-
-  const upcoming =
-    tours.find((t) => t.status === "Upcoming") ??
-    tours[tours.length - 1];
+  const upcoming = tours.find((t) => t.status === "Upcoming") ?? null;
 
   const champions = tours
     .filter((t) => t.status === "Completed")
     .slice(-3)
     .reverse();
-
-  const h2h = headToHead();
-
-  const seasonPoints = tours
-    .filter((t) => t.status === "Completed")
-    .reduce(
-      (acc: { label: string; p1: number; p2: number }[], t) => {
-        const prev = acc[acc.length - 1] ?? {
-          p1: 0,
-          p2: 0,
-        };
-
-        const add = (id?: string) =>
-          id === "p1"
-            ? t.points
-            : id === "p2"
-            ? Math.round(t.points * 0.6)
-            : 0;
-
-        acc.push({
-          label: t.shortName,
-          p1:
-            prev.p1 +
-            add(t.championId === "p1" ? "p1" : undefined) +
-            (t.runnerUpId === "p1"
-              ? Math.round(t.points * 0.6)
-              : 0),
-          p2:
-            prev.p2 +
-            add(t.championId === "p2" ? "p2" : undefined) +
-            (t.runnerUpId === "p2"
-              ? Math.round(t.points * 0.6)
-              : 0),
-        });
-
-        return acc;
-      },
-      []
-    );
 
   return (
     <AppShell title="Dashboard" eyebrow={`${year} Season · Live`}>
@@ -108,53 +107,48 @@ export default function DashboardClient() {
               </div>
 
               <h2 className="mt-2 font-display text-5xl uppercase md:text-7xl">
-                {no1.name}
+                {no1 && no1.name}
               </h2>
 
               <div className="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
-                <span>{no1.country}</span>
+                <span>{no1 && no1.country}</span>
                 <span className="size-1 rounded-full bg-border" />
-                <span>{no1.hand}-Handed</span>
+                <span>{no1 && no1.hand}-Handed</span>
                 <span className="size-1 rounded-full bg-border" />
-                <span>{no1.height}</span>
+                <span>{no1 && no1.height}</span>
               </div>
 
               <div className="mt-5 flex gap-6">
                 <div>
-                  <div className="font-mono text-[10px] uppercase">
-                    Points
-                  </div>
+                  <div className="font-mono text-[10px] uppercase">Points</div>
                   <div className="font-display text-3xl text-court">
                     {rankings[0].points.toLocaleString()}
                   </div>
                 </div>
 
                 <div>
-                  <div className="font-mono text-[10px] uppercase">
-                    Titles
-                  </div>
+                  <div className="font-mono text-[10px] uppercase">Titles</div>
                   <div className="font-display text-3xl">
                     {rankings[0].titles}
                   </div>
                 </div>
 
                 <div>
-                  <div className="font-mono text-[10px] uppercase">
-                    W-L
-                  </div>
+                  <div className="font-mono text-[10px] uppercase">W-L</div>
                   <div className="font-display text-3xl">
-                    {rankings[0].matchesWon}-
-                    {rankings[0].matchesLost}
+                    {rankings[0].matchesWon}-{rankings[0].matchesLost}
                   </div>
                 </div>
               </div>
             </div>
 
-            <PlayerAvatar
-              player={no1}
-              size="xl"
-              className="self-start glow-court"
-            />
+            {no1 && (
+              <PlayerAvatar
+                player={no1}
+                size="xl"
+                className="self-start glow-court"
+              />
+            )}
           </div>
         </div>
 
@@ -177,57 +171,70 @@ export default function DashboardClient() {
           </div>
 
           <div className="mt-4 flex justify-around">
-            {[getPlayer("p1"), getPlayer("p2")].map(
-              (p, i) => (
-                <div key={p.id} className="text-center">
-                  <PlayerAvatar player={p} size="lg" />
-                  <div className="mt-2 font-display text-3xl">
-                    {i === 0 ? h2h.p1Wins : h2h.p2Wins}
-                  </div>
-                </div>
-              )
-            )}
+            {[player1, player2].filter(Boolean).map((p) => (
+              <div key={p!._id} className="text-center">
+                <PlayerAvatar player={p!} size="lg" />
+
+                <div className="mt-2 text-sm">{p!.shortName}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
       <section className="mt-4 grid gap-4 lg:grid-cols-3">
         <div className="rounded-xl border border-border/60 bg-card/60 p-5 lg:col-span-2">
           <div className="flex items-center justify-between">
-            <h3 className="font-display text-lg uppercase tracking-wide">Current Rankings</h3>
-            <Link href="/rankings" className="text-xs text-court hover:underline">
+            <h3 className="font-display text-lg uppercase tracking-wide">
+              Current Rankings
+            </h3>
+            <Link
+              href="/rankings"
+              className="text-xs text-court hover:underline"
+            >
               Full table →
             </Link>
           </div>
-          <div className="mt-4 divide-y divide-border/50">
-            {rankings.map((r) => {
-              const p = getPlayer(r.playerId);
-              return (
-                <div key={r.playerId} className="flex items-center gap-4 py-3">
-                  <div className="w-8 font-display text-2xl text-court">{r.rank}</div>
-                  <PlayerAvatar player={p} />
-                  <div className="flex-1">
-                    <div className="font-medium">{p.name}</div>
-                    <div className="text-xs text-muted-foreground">{p.country}</div>
-                  </div>
-                  <RankingMovement current={r.rank} previous={r.previousRank} />
-                  <div className="hidden w-20 text-right text-sm sm:block">
-                    <div className="font-display text-lg">{r.titles}</div>
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                      Titles
-                    </div>
-                  </div>
-                  <div className="w-24 text-right">
-                    <div className="font-display text-xl text-court">
-                      {r.points.toLocaleString()}
-                    </div>
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                      Points
-                    </div>
+          {rankings.map((r) => {
+            const p = r.player;
+
+            if (!p) return null;
+
+            return (
+              <div key={r.playerId} className="flex items-center gap-4 py-3">
+                <div className="w-8 font-display text-2xl text-court">
+                  {r.rank}
+                </div>
+
+                <PlayerAvatar player={p} />
+
+                <div className="flex-1">
+                  <div className="font-medium">{p.name}</div>
+
+                  <div className="text-xs text-muted-foreground">
+                    {p.country}
                   </div>
                 </div>
-              );
-            })}
-          </div>
+
+                <div className="hidden w-20 text-right text-sm sm:block">
+                  <div className="font-display text-lg">{r.titles}</div>
+
+                  <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                    Titles
+                  </div>
+                </div>
+
+                <div className="w-24 text-right">
+                  <div className="font-display text-xl text-court">
+                    {r.points.toLocaleString()}
+                  </div>
+
+                  <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                    Points
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         <div className="space-y-4">
@@ -240,7 +247,9 @@ export default function DashboardClient() {
                 <MatchCard match={latest} />
               </div>
             ) : (
-              <div className="mt-3 text-sm text-muted-foreground">No matches yet.</div>
+              <div className="mt-3 text-sm text-muted-foreground">
+                No matches yet.
+              </div>
             )}
           </div>
           <div className="rounded-xl border border-border/60 bg-card/60 p-5">
@@ -252,10 +261,14 @@ export default function DashboardClient() {
                 <div className="flex items-center gap-2">
                   <SurfaceBadge surface={upcoming.surface} />
                   <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    {upcoming.month}
+                    {new Date(upcoming.startDate).toLocaleString("en", {
+                      month: "long",
+                    })}
                   </span>
                 </div>
-                <h4 className="mt-2 font-display text-2xl uppercase">{upcoming.name}</h4>
+                <h4 className="mt-2 font-display text-2xl uppercase">
+                  {upcoming.name}
+                </h4>
                 <p className="text-xs text-muted-foreground">
                   {upcoming.city}, {upcoming.country}
                 </p>
@@ -264,7 +277,7 @@ export default function DashboardClient() {
           </div>
         </div>
       </section>
-       {/* Stats */}
+      {/* Stats */}
       <section className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           label="Season Titles"
@@ -296,34 +309,42 @@ export default function DashboardClient() {
       <section className="mt-4 grid gap-4 lg:grid-cols-3">
         <div className="rounded-xl border border-border/60 bg-card/60 p-5 lg:col-span-2">
           <div className="flex items-center justify-between">
-            <h3 className="font-display text-lg uppercase tracking-wide">Points Progression</h3>
+            <h3 className="font-display text-lg uppercase tracking-wide">
+              Points Progression
+            </h3>
             <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               {year} Season
             </span>
           </div>
-          <div className="mt-3">
-            <PointsProgressionChart data={seasonPoints} />
-          </div>
         </div>
         <div className="rounded-xl border border-border/60 bg-card/60 p-5">
-          <h3 className="font-display text-lg uppercase tracking-wide">Recent Champions</h3>
+          <h3 className="font-display text-lg uppercase tracking-wide">
+            Recent Champions
+          </h3>
           <div className="mt-3 space-y-2">
             {champions.map((t) => {
-              const ch = t.championId ? getPlayer(t.championId) : null;
+              const ch = t.champion;
               return (
                 <div
-                  key={t.id}
+                  key={t._id}
                   className="flex items-center justify-between rounded-md border border-border/50 bg-background/40 p-3"
                 >
                   <div>
-                    <div className="font-display text-sm uppercase tracking-wide">{t.shortName}</div>
+                    <div className="font-display text-sm uppercase tracking-wide">
+                      {t.shortName}
+                    </div>
                     <div className="text-[11px] text-muted-foreground">
-                      {t.month} · {t.surface}
+                      {new Date(t.startDate).toLocaleString("en", {
+                        month: "short",
+                      })}{" "}
+                      · {t.surface}
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-sm font-medium">{ch?.shortName}</div>
-                    <div className="font-mono text-[10px] text-court">{t.finalScore}</div>
+                    <div className="font-mono text-[10px] text-court">
+                      {t.finalScore}
+                    </div>
                   </div>
                 </div>
               );
@@ -334,8 +355,13 @@ export default function DashboardClient() {
       {/* Upcoming tournaments preview */}
       <section className="mt-4">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="font-display text-lg uppercase tracking-wide">Upcoming Tournaments</h3>
-          <Link href="/tournaments" className="text-xs text-court hover:underline">
+          <h3 className="font-display text-lg uppercase tracking-wide">
+            Upcoming Tournaments
+          </h3>
+          <Link
+            href="/tournaments"
+            className="text-xs text-court hover:underline"
+          >
             All tournaments →
           </Link>
         </div>
@@ -344,14 +370,14 @@ export default function DashboardClient() {
             .filter((t) => t.status === "Upcoming")
             .slice(0, 3)
             .map((t) => (
-              <TournamentCard key={t.id} tournament={t} />
+              <TournamentCard key={t._id} tournament={t} />
             ))}
           {tours.filter((t) => t.status === "Upcoming").length === 0 &&
-            tours.slice(-3).map((t) => <TournamentCard key={t.id} tournament={t} />)}
+            tours
+              .slice(-3)
+              .map((t) => <TournamentCard key={t._id} tournament={t} />)}
         </div>
       </section>
-
-      
     </AppShell>
   );
 }
