@@ -53,21 +53,44 @@ export const getById = query({
 
     const matches = await ctx.db
       .query("matches")
-      .withIndex("by_tournament", (q) =>
-        q.eq("tournamentId", args.id)
-      )
+      .withIndex("by_tournament", (q) => q.eq("tournamentId", args.id))
       .collect();
 
     const players = await ctx.db.query("players").collect();
 
+    const playerMap = new Map(players.map((p) => [p._id, p]));
+
     const enrichedMatches = matches.map((m) => ({
       ...m,
-      player1: players.find((p) => p._id === m.player1Id) ?? null,
-      player2: players.find((p) => p._id === m.player2Id) ?? null,
+      player1: playerMap.get(m.player1Id) ?? null,
+      player2: playerMap.get(m.player2Id) ?? null,
+      tournament: {
+        _id: tournament._id,
+        name: tournament.name,
+        shortName: tournament.shortName,
+        city: tournament.city,
+        country: tournament.country,
+        surface: tournament.surface,
+        category: tournament.category,
+        startDate: tournament.startDate,
+        endDate: tournament.endDate,
+        status: tournament.status,
+        points: tournament.points,
+      },
     }));
+
+    const champion = tournament.championId
+      ? playerMap.get(tournament.championId) ?? null
+      : null;
+
+    const runnerUp = tournament.runnerUpId
+      ? playerMap.get(tournament.runnerUpId) ?? null
+      : null;
 
     return {
       ...tournament,
+      champion,
+      runnerUp,
       matches: enrichedMatches,
     };
   },

@@ -4,33 +4,19 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import Link from "next/link";
 
 import { AppShell } from "@/components/tennis/AppShell";
 import { SurfaceBadge } from "@/components/tennis/SurfaceBadge";
-import { PlayerAvatar } from "@/components/tennis/PlayerAvatar";
 import { MatchCard } from "@/components/tennis/MatchCard";
 
-import {
-  Trophy,
-  MapPin,
-  Calendar,
-  ArrowLeft,
-} from "lucide-react";
+import { Trophy, MapPin, Calendar, ArrowLeft } from "lucide-react";
 
-type Props = {
-  params: { id: string };
-  searchParams: { year?: string };
-};
-
-export default function TournamentDetailPage({
-  params,
-  searchParams,
-}: Props) {
+export default function TournamentDetailPage() {
+  const params = useParams<{ id: string }>();
   const id = params.id;
 
-  // IMPORTANT: Convex requires branded Id type
   const tournament = useQuery(api.tournaments.getById, {
     id: id as Id<"tournaments">,
   });
@@ -44,20 +30,16 @@ export default function TournamentDetailPage({
   }
 
   if (tournament === null) {
-    return notFound();
+    notFound();
   }
 
   const matches = tournament.matches ?? [];
-
-  const champion = tournament.championId;
-  const runnerUp = tournament.runnerUpId;
 
   return (
     <AppShell
       title={tournament.name}
       eyebrow={`${tournament.category} · ${tournament.startDate}`}
     >
-      {/* BACK LINK */}
       <Link
         href="/tournaments"
         className="mb-4 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
@@ -66,7 +48,6 @@ export default function TournamentDetailPage({
         All tournaments
       </Link>
 
-      {/* HERO */}
       <div className="relative overflow-hidden rounded-xl border p-8">
         <div className="flex flex-col gap-6 md:flex-row md:justify-between">
           <div>
@@ -99,7 +80,6 @@ export default function TournamentDetailPage({
             </div>
           </div>
 
-          {/* CHAMPION */}
           {tournament.status === "Completed" && (
             <div className="rounded-lg border p-4 text-center">
               <Trophy className="mx-auto size-5 text-yellow-500" />
@@ -115,7 +95,6 @@ export default function TournamentDetailPage({
         </div>
       </div>
 
-      {/* MATCHES */}
       <section className="mt-8">
         <h2 className="font-display text-xl uppercase tracking-wide">
           Match History
