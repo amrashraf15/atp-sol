@@ -19,6 +19,7 @@ import { MatchCard } from "@/components/tennis/MatchCard";
 import { StatsCard } from "@/components/tennis/StatsCard";
 import { TournamentCard } from "@/components/tennis/TournamentCard";
 import { useSeason } from "@/lib/useSeason";
+import { DashboardSkeleton } from "@/components/tennis/DashboardSkeleton";
 
 export default function DashboardClient() {
   const { year } = useSeason();
@@ -32,18 +33,96 @@ export default function DashboardClient() {
     season ? { seasonId: season._id } : "skip",
   );
 
-  if (!season || !dashboard) {
+  // Loading state
+  if (seasons === undefined || dashboard === undefined) {
+    return (
+      <AppShell title="Dashboard" eyebrow={`${year} Season · Live`}>
+        <DashboardSkeleton />
+      </AppShell>
+    );
+  }
+
+  // Season does not exist
+  if (!season) {
     return (
       <AppShell title="Dashboard" eyebrow={`${year} Season`}>
-        Loading...
+        <div
+          className="
+        mt-6
+        rounded-xl
+        border
+        border-border/60
+        bg-card/60
+        p-8
+        text-center
+      "
+        >
+          <h2 className="font-display text-3xl uppercase">No Season Data</h2>
+
+          <p className="mt-2 text-sm text-muted-foreground">
+            There is no available data for the {year} season.
+          </p>
+        </div>
+      </AppShell>
+    );
+  }
+
+  // Dashboard exists but has no content
+  if (
+    dashboard.rankings.length === 0 &&
+    dashboard.matches.length === 0 &&
+    dashboard.tournaments.length === 0
+  ) {
+    return (
+      <AppShell title="Dashboard" eyebrow={`${year} Season`}>
+        <div
+          className="
+        mt-6
+        rounded-xl
+        border
+        border-border/60
+        bg-card/60
+        p-8
+        text-center
+      "
+        >
+          <h2 className="font-display text-3xl uppercase">No Data Available</h2>
+
+          <p className="mt-2 text-sm text-muted-foreground">
+            No matches, rankings, or tournaments have been added for this season
+            yet.
+          </p>
+        </div>
       </AppShell>
     );
   }
 
   const rankings = dashboard.rankings;
 
-  if (!dashboard || rankings.length === 0 || !rankings[0]?.player) {
-    return <div>Loading...</div>;
+  if (rankings.length === 0 || !rankings[0]?.player) {
+    return (
+      <AppShell title="Dashboard" eyebrow={`${year} Season`}>
+        <div
+          className="
+        mt-6
+        rounded-xl
+        border
+        border-border/60
+        bg-card/60
+        p-8
+        text-center
+      "
+        >
+          <h2 className="font-display text-3xl uppercase">
+            No Rankings Available
+          </h2>
+
+          <p className="mt-2 text-sm text-muted-foreground">
+            Rankings have not been generated for {year} yet.
+          </p>
+        </div>
+      </AppShell>
+    );
   }
 
   const no1 = rankings[0].player;

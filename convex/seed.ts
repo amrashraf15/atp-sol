@@ -45,6 +45,9 @@ export const seed = mutation({
     }
 
     const season2026Id = seasonIds[2026];
+    const season2027Id = seasonIds[2027];
+    const season2028Id = seasonIds[2028];
+    const season2029Id = seasonIds[2029];
 
     // =========================
     // Players
@@ -267,6 +270,68 @@ export const seed = mutation({
         points: tournament.points,
       });
     }
+
+    for (const tournament of tournaments) {
+      await ctx.db.insert("tournaments", {
+        seasonId: season2027Id,
+
+        name: tournament.name,
+        shortName: tournament.shortName,
+        city: tournament.city,
+        country: tournament.country,
+
+        surface: tournament.surface,
+        category: tournament.category,
+
+        startDate: tournament.startDate,
+        endDate: tournament.endDate,
+
+        status: "Upcoming",
+        points: tournament.points,
+      });
+    }
+
+    for (const tournament of tournaments) {
+      await ctx.db.insert("tournaments", {
+        seasonId: season2028Id,
+
+        name: tournament.name,
+        shortName: tournament.shortName,
+        city: tournament.city,
+        country: tournament.country,
+
+        surface: tournament.surface,
+        category: tournament.category,
+
+        startDate: tournament.startDate,
+        endDate: tournament.endDate,
+
+        status: "Upcoming",
+        points: tournament.points,
+      });
+    }
+
+
+    for (const tournament of tournaments) {
+      await ctx.db.insert("tournaments", {
+        seasonId: season2029Id,
+
+        name: tournament.name,
+        shortName: tournament.shortName,
+        city: tournament.city,
+        country: tournament.country,
+
+        surface: tournament.surface,
+        category: tournament.category,
+
+        startDate: tournament.startDate,
+        endDate: tournament.endDate,
+
+        status: "Upcoming",
+        points: tournament.points,
+      });
+    }
+
 
     // =========================
     // Result
