@@ -102,8 +102,9 @@ export default function ScheduleClient() {
 
                       {isCompleted && t.championId && (
                         <div className="mt-3 inline-flex items-center gap-1 rounded-sm border border-court/40 bg-court/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-court">
-                          <Trophy className="size-3" /> Winner
+                          <Trophy className="size-3" /> {t.champion?.name}
                         </div>
+                        
                       )}
                     </Link>
                   );
