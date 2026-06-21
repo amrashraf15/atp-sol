@@ -29,7 +29,7 @@ The app simulates a real tennis ecosystem with:
 * Rivalry / head-to-head analytics
 * Historical champions and year-end records
 * Season progression across multiple years
-* A scalable frontend architecture ready for **Convex integration**
+* A scalable frontend architecture integrated with ** Convex **
 
 ---
 
