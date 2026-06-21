@@ -217,9 +217,9 @@ with a **season selector** in the application header.
 * **Tailwind CSS** — utility-first styling
 * **shadcn/ui** — composable UI primitives
 * **Lucide React** — icon system
-* **Recharts** *(or chart layer used in the project)* — analytics visualization
-* **Mock Data Layer** — structured for future backend integration
-* **Convex-ready architecture** — frontend designed to connect to live data later
+* **Convex** — backend, database, queries, and mutations
+* **Recharts** *(or the charting library used in the project)* — analytics visualization
+* **Modern component architecture** — reusable UI and domain-driven page sections
 
 ---
 
@@ -236,6 +236,39 @@ This project follows a premium sports analytics design philosophy:
 * **Responsive design for desktop, tablet, and mobile**
 * **Reusable components with scalable folder structure**
 * **Data-first UI built for future backend integration**
+
+---
+## Convex Data Architecture
+
+ATP Rivalry is now backed by **Convex** instead of static mock data.
+
+The application uses Convex to manage the core tennis domain, including:
+
+* players
+* rankings
+* tournaments
+* tournament results
+* match records
+* season history
+* head-to-head data
+* statistics and performance summaries
+
+This transition turns ATP Rivalry from a UI-driven concept into a **real interactive tennis management platform** with persistent data and scalable state management.
+
+### Convex responsibilities in the project
+
+Convex is used to support:
+
+* **Queries** for reading rankings, tournaments, match history, player stats, and historical records
+* **Mutations** for recording match outcomes, updating tournament champions, and maintaining season progression
+* **Persistent storage** for seasons, tournaments, matches, and rivalry data
+* **Scalable data flow** between the App Router frontend and the application data layer
+
+### Why Convex fits ATP Rivalry
+
+Convex is a strong fit for ATP Rivalry because the app is heavily data-driven and revolves around evolving seasonal records.
+It enables the project to move beyond presentation-only mock screens and support a real tennis management workflow with maintainable data structures and future extensibility.
+
 
 ---
 
@@ -305,27 +338,7 @@ The data model is designed to support:
 * surface-based analytics
 * head-to-head comparisons
 
----
 
-## Mock Data Strategy
-
-This project currently uses **realistic mock data** instead of backend logic.
-
-The goal of the mock layer is to:
-
-* simulate a real ATP-style tennis season
-* make every page fully navigable and visually complete
-* preserve a backend-ready shape for later integration
-* allow rapid UI iteration before introducing live persistence
-
-The data layer is structured so it can later be replaced by:
-
-* Convex queries
-* Convex mutations
-* server-side data fetching
-* live season updates and statistics recalculation
-
----
 
 ## Project Goals
 
