@@ -310,33 +310,6 @@ These components are intentionally designed to make the UI scalable and easy to 
 
 ---
 
-## Data Modeling
-
-The app is structured to support future **Convex** integration, with clear TypeScript models for tennis domain entities.
-
-### Main interfaces
-
-* `Player`
-* `Tournament`
-* `Match`
-* `Set`
-* `Ranking`
-* `Season`
-* `Statistic`
-
-### Example domain coverage
-
-The data model is designed to support:
-
-* player profiles
-* ranking history
-* tournament metadata
-* match results
-* set-by-set scoring
-* seasonal performance summaries
-* historical champion records
-* surface-based analytics
-* head-to-head comparisons
 
 
 
@@ -357,7 +330,6 @@ The project focuses on:
 
 ## Folder Structure
 
-> Adjust this section if your actual structure differs, but this is the intended architecture for a scalable ATP Rivalry setup.
 
 ```bash
 src/
@@ -448,48 +420,13 @@ Responsive behavior focuses on:
 
 ---
 
-## Future Convex Integration
-
-The current project intentionally avoids implementing backend logic, but the architecture is prepared for a future **Convex** layer.
-
-Planned Convex integration areas:
-
-### Queries
-
-* fetch seasons
-* fetch tournaments by season
-* fetch rankings by season
-* fetch player statistics
-* fetch match history
-* fetch tournament detail data
-* fetch head-to-head aggregates
-
-### Mutations
-
-* add tournament result
-* record match result
-* update rankings
-* update player statistics
-* create new season
-* set year-end champion
-
-### Benefits of Convex integration
-
-* persistent season history
-* live rankings updates
-* editable tournament results
-* dynamic statistics recalculation
-* scalable multi-season management
-
----
-
 ## Getting Started
 
 ## 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/atp-rivalry.git
-cd atp-rivalry
+git clone https://github.com/your-username/atp-sol.git
+cd atp-spl
 ```
 
 ## 2. Install dependencies
@@ -546,34 +483,6 @@ npm run lint
 * modern Chromium-based browser for best local testing
 
 ---
-
-## Screenshots / Demo
-
-You can add this section once you upload visuals.
-
-```md
-## Screenshots
-
-### Dashboard
-![Dashboard Screenshot](./public/screenshots/dashboard.png)
-
-### Rankings
-![Rankings Screenshot](./public/screenshots/rankings.png)
-
-### Tournament Details
-![Tournament Screenshot](./public/screenshots/tournament-details.png)
-```
-
-If you deploy the project, add:
-
-```md
-## Live Demo
-
-[View ATP Rivalry Live](https://your-demo-link.com)
-```
-
----
-
 ## Why This Project Matters
 
 ATP Rivalry is more than a UI exercise.
@@ -591,25 +500,6 @@ It demonstrates how a niche sports management idea can be elevated into somethin
 
 ---
 
-## Roadmap
-
-Potential future improvements:
-
-* Convex backend integration
-* authentication and player accounts
-* editable tournament brackets
-* live rankings calculation
-* player profile pages
-* injury / availability tracking
-* richer advanced stats
-* match filters by season / surface / tournament
-* exportable rivalry reports
-* admin mode for result entry
-* animated tournament timeline
-* season simulation mode
-
----
-
 ## Author
 
 Built by **Amr Ashraf**
@@ -619,40 +509,10 @@ If you’d like, add your GitHub / portfolio / LinkedIn here.
 ## Author
 
 **Amr Ashraf**
-- GitHub: [your-github-link]
-- LinkedIn: [your-linkedin-link]
-- Portfolio: [your-portfolio-link]
+- GitHub: [https://github.com/amrashraf15]
+- LinkedIn: [https://www.linkedin.com/in/amr-ashraf-7a6b682b7/]
 ```
 
----
-
-## License
-
-Choose the license that fits your project.
-
-Example:
-
-```md
-MIT License
-```
-
-or create a full `LICENSE` file and reference it here.
-
----
-
-# Final Notes
-
-ATP Rivalry was designed to feel like a **professional ATP Tour management platform**, not a simple tennis tracker.
-
-The emphasis of the project is on:
-
-* polished UI
-* clear information hierarchy
-* reusable architecture
-* realistic tennis data modeling
-* premium sports-product presentation
-
-If you’re viewing this repository as a recruiter, developer, or designer, the intention is to showcase both **frontend engineering quality** and **product-level interface thinking** through a unique sports analytics experience.
 
 
 
