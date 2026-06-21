@@ -9,7 +9,6 @@ import {
   Swords,
   ArrowRight,
   Activity,
-  Flame,
   Trophy,
 } from "lucide-react";
 import { AppShell } from "@/components/tennis/AppShell";
