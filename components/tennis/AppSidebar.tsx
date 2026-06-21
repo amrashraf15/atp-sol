@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 const ITEMS = [
   {
@@ -86,21 +87,18 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <Sidebar
-      collapsible="icon"
-      className="border-r border-border/60"
-    >
+    <Sidebar collapsible="icon" className="border-r border-border/60">
       <SidebarHeader className="border-b border-border/60 px-3 py-4">
-        <Link
-          href="/"
-          className="flex items-center gap-2"
-        >
-          <div className="relative flex size-9 items-center justify-center rounded-md bg-court text-primary-foreground glow-court">
-            <span className="font-display text-lg">
-              A
-            </span>
-
-            <span className="absolute -bottom-0.5 -right-0.5 size-2 rounded-full bg-court-glow ring-2 ring-sidebar" />
+        <Link href="/" className="flex items-center gap-2">
+          <div className="relative flex size-9 items-center justify-center overflow-hidden rounded-md bg-court">
+            <Image
+              src="/logo.jpg"
+              alt="ATP Rivalry logo"
+              width={36}
+              height={36}
+              className="object-contain"
+              priority
+            />
           </div>
 
           {!collapsed && (
@@ -130,26 +128,18 @@ export function AppSidebar() {
                   item.href === "/"
                     ? pathname === "/"
                     : pathname === item.href ||
-                      pathname.startsWith(
-                        `${item.href}/`
-                      );
+                      pathname.startsWith(`${item.href}/`);
 
                 const Icon = item.icon;
 
                 return (
-                  <SidebarMenuItem
-                    key={item.href}
-                  >
-                    <SidebarMenuButton
-                      asChild
-                      isActive={active}
-                    >
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton asChild isActive={active}>
                       <Link
                         href={item.href}
                         className={cn(
                           "group/link relative flex items-center gap-3",
-                          active &&
-                            "text-court"
+                          active && "text-court",
                         )}
                       >
                         {active && (

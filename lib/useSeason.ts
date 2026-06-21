@@ -19,6 +19,7 @@ export function useSeason() {
 
   return {
     year: currentSeason?.year ?? 2026,
+    seasonId: currentSeason?._id,
     setYear,
     seasons,
     currentSeason,

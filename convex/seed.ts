@@ -13,11 +13,36 @@ type SeasonSeed = {
   status: SeasonStatus;
 };
 
+type TournamentTemplate = {
+  name: string;
+  shortName: string;
+  city: string;
+  country: string;
+  surface: "Hard" | "Clay" | "Grass";
+  category: "Grand Slam" | "Masters 1000";
+  startDate: string; // template base year = 2026
+  endDate: string;   // template base year = 2026
+  points: number;
+};
+
+// =========================
+// Helpers
+// =========================
+
+function replaceYear(date: string, targetYear: number) {
+  const [, month, day] = date.split("-");
+  return `${targetYear}-${month}-${day}`;
+}
+
+// =========================
+// Seed
+// =========================
+
 export const seed = mutation({
   args: {},
   handler: async (ctx) => {
     // Prevent duplicate seed
-    const existingPlayers = await ctx.db.query("players").collect();
+    const existingPlayers = await ctx.db.query("players").take(1);
 
     if (existingPlayers.length > 0) {
       return {
@@ -78,7 +103,7 @@ export const seed = mutation({
     });
 
     // =========================
-    // Rankings (2026 only initial)
+    // Rankings (initial 2026 ranking only)
     // =========================
 
     await ctx.db.insert("rankings", {
@@ -102,17 +127,17 @@ export const seed = mutation({
     });
 
     // =========================
-    // Tournaments (2026 season)
+    // Tournament templates (base year = 2026)
     // =========================
 
-    const tournaments = [
+    const tournamentTemplates: TournamentTemplate[] = [
       {
         name: "Australian Open",
         shortName: "AO",
         city: "Melbourne",
         country: "Australia",
-        surface: "Hard" as const,
-        category: "Grand Slam" as const,
+        surface: "Hard",
+        category: "Grand Slam",
         startDate: "2026-01-15",
         endDate: "2026-01-28",
         points: 2000,
@@ -122,8 +147,8 @@ export const seed = mutation({
         shortName: "Indian Wells",
         city: "Indian Wells",
         country: "USA",
-        surface: "Hard" as const,
-        category: "Masters 1000" as const,
+        surface: "Hard",
+        category: "Masters 1000",
         startDate: "2026-03-06",
         endDate: "2026-03-17",
         points: 1000,
@@ -133,8 +158,8 @@ export const seed = mutation({
         shortName: "Miami",
         city: "Miami",
         country: "USA",
-        surface: "Hard" as const,
-        category: "Masters 1000" as const,
+        surface: "Hard",
+        category: "Masters 1000",
         startDate: "2026-03-20",
         endDate: "2026-03-31",
         points: 1000,
@@ -144,8 +169,8 @@ export const seed = mutation({
         shortName: "Monte Carlo",
         city: "Monte Carlo",
         country: "Monaco",
-        surface: "Clay" as const,
-        category: "Masters 1000" as const,
+        surface: "Clay",
+        category: "Masters 1000",
         startDate: "2026-04-07",
         endDate: "2026-04-14",
         points: 1000,
@@ -155,8 +180,8 @@ export const seed = mutation({
         shortName: "Madrid",
         city: "Madrid",
         country: "Spain",
-        surface: "Clay" as const,
-        category: "Masters 1000" as const,
+        surface: "Clay",
+        category: "Masters 1000",
         startDate: "2026-04-25",
         endDate: "2026-05-05",
         points: 1000,
@@ -166,8 +191,8 @@ export const seed = mutation({
         shortName: "Rome",
         city: "Rome",
         country: "Italy",
-        surface: "Clay" as const,
-        category: "Masters 1000" as const,
+        surface: "Clay",
+        category: "Masters 1000",
         startDate: "2026-05-08",
         endDate: "2026-05-19",
         points: 1000,
@@ -177,8 +202,8 @@ export const seed = mutation({
         shortName: "Roland Garros",
         city: "Paris",
         country: "France",
-        surface: "Clay" as const,
-        category: "Grand Slam" as const,
+        surface: "Clay",
+        category: "Grand Slam",
         startDate: "2026-05-26",
         endDate: "2026-06-09",
         points: 2000,
@@ -188,8 +213,8 @@ export const seed = mutation({
         shortName: "Wimbledon",
         city: "London",
         country: "United Kingdom",
-        surface: "Grass" as const,
-        category: "Grand Slam" as const,
+        surface: "Grass",
+        category: "Grand Slam",
         startDate: "2026-07-01",
         endDate: "2026-07-14",
         points: 2000,
@@ -199,8 +224,8 @@ export const seed = mutation({
         shortName: "Canada",
         city: "Toronto",
         country: "Canada",
-        surface: "Hard" as const,
-        category: "Masters 1000" as const,
+        surface: "Hard",
+        category: "Masters 1000",
         startDate: "2026-08-05",
         endDate: "2026-08-11",
         points: 1000,
@@ -210,8 +235,8 @@ export const seed = mutation({
         shortName: "Cincinnati",
         city: "Cincinnati",
         country: "USA",
-        surface: "Hard" as const,
-        category: "Masters 1000" as const,
+        surface: "Hard",
+        category: "Masters 1000",
         startDate: "2026-08-12",
         endDate: "2026-08-19",
         points: 1000,
@@ -221,8 +246,8 @@ export const seed = mutation({
         shortName: "US Open",
         city: "New York",
         country: "USA",
-        surface: "Hard" as const,
-        category: "Grand Slam" as const,
+        surface: "Hard",
+        category: "Grand Slam",
         startDate: "2026-08-26",
         endDate: "2026-09-08",
         points: 2000,
@@ -232,8 +257,8 @@ export const seed = mutation({
         shortName: "Shanghai",
         city: "Shanghai",
         country: "China",
-        surface: "Hard" as const,
-        category: "Masters 1000" as const,
+        surface: "Hard",
+        category: "Masters 1000",
         startDate: "2026-10-02",
         endDate: "2026-10-13",
         points: 1000,
@@ -243,95 +268,42 @@ export const seed = mutation({
         shortName: "Paris",
         city: "Paris",
         country: "France",
-        surface: "Hard" as const,
-        category: "Masters 1000" as const,
+        surface: "Hard",
+        category: "Masters 1000",
         startDate: "2026-10-28",
         endDate: "2026-11-03",
         points: 1000,
       },
     ];
 
-    for (const tournament of tournaments) {
-      await ctx.db.insert("tournaments", {
-        seasonId: season2026Id,
+    // =========================
+    // Seed tournaments for all seasons
+    // =========================
 
-        name: tournament.name,
-        shortName: tournament.shortName,
-        city: tournament.city,
-        country: tournament.country,
+    const seasonsToSeed = [
+      { year: 2026, seasonId: season2026Id },
+      { year: 2027, seasonId: season2027Id },
+      { year: 2028, seasonId: season2028Id },
+      { year: 2029, seasonId: season2029Id },
+    ];
 
-        surface: tournament.surface,
-        category: tournament.category,
-
-        startDate: tournament.startDate,
-        endDate: tournament.endDate,
-
-        status: "Upcoming",
-        points: tournament.points,
-      });
+    for (const season of seasonsToSeed) {
+      for (const tournament of tournamentTemplates) {
+        await ctx.db.insert("tournaments", {
+          seasonId: season.seasonId,
+          name: tournament.name,
+          shortName: tournament.shortName,
+          city: tournament.city,
+          country: tournament.country,
+          surface: tournament.surface,
+          category: tournament.category,
+          startDate: replaceYear(tournament.startDate, season.year),
+          endDate: replaceYear(tournament.endDate, season.year),
+          status: "Upcoming",
+          points: tournament.points,
+        });
+      }
     }
-
-    for (const tournament of tournaments) {
-      await ctx.db.insert("tournaments", {
-        seasonId: season2027Id,
-
-        name: tournament.name,
-        shortName: tournament.shortName,
-        city: tournament.city,
-        country: tournament.country,
-
-        surface: tournament.surface,
-        category: tournament.category,
-
-        startDate: tournament.startDate,
-        endDate: tournament.endDate,
-
-        status: "Upcoming",
-        points: tournament.points,
-      });
-    }
-
-    for (const tournament of tournaments) {
-      await ctx.db.insert("tournaments", {
-        seasonId: season2028Id,
-
-        name: tournament.name,
-        shortName: tournament.shortName,
-        city: tournament.city,
-        country: tournament.country,
-
-        surface: tournament.surface,
-        category: tournament.category,
-
-        startDate: tournament.startDate,
-        endDate: tournament.endDate,
-
-        status: "Upcoming",
-        points: tournament.points,
-      });
-    }
-
-
-    for (const tournament of tournaments) {
-      await ctx.db.insert("tournaments", {
-        seasonId: season2029Id,
-
-        name: tournament.name,
-        shortName: tournament.shortName,
-        city: tournament.city,
-        country: tournament.country,
-
-        surface: tournament.surface,
-        category: tournament.category,
-
-        startDate: tournament.startDate,
-        endDate: tournament.endDate,
-
-        status: "Upcoming",
-        points: tournament.points,
-      });
-    }
-
 
     // =========================
     // Result
@@ -342,7 +314,7 @@ export const seed = mutation({
       seasons: seasonsData.length,
       players: 2,
       rankings: 2,
-      tournaments: tournaments.length,
+      tournaments: tournamentTemplates.length * seasonsToSeed.length, // 13 * 4 = 52
     };
   },
 });

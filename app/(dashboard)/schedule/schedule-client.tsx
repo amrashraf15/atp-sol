@@ -1,35 +1,49 @@
 "use client";
 
-import { tournamentsBySeason, getPlayer } from "@/lib/tennis-data";
 import Link from "next/link";
 import { Trophy } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+
 import { AppShell } from "@/components/tennis/AppShell";
 import { SurfaceBadge } from "@/components/tennis/SurfaceBadge";
 import { useSeason } from "@/lib/useSeason";
 
 const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December",
 ];
 
 export default function ScheduleClient() {
-  const { year } = useSeason();
-  const tours = tournamentsBySeason(year);
+  const { year, seasonId } = useSeason();
 
-  const byMonth = MONTHS.map((m) => ({
-    month: m,
-    items: tours.filter((t) => t.month === m),
-  })).filter((x) => x.items.length);
+  // 1. Load tournaments from Convex
+  const tournaments = useQuery(
+    api.tournaments.getBySeason,
+    seasonId ? { seasonId } : "skip"
+  );
+
+  // loading state
+  if (!tournaments) {
+    return (
+      <AppShell title="Schedule" eyebrow={`${year} Season Calendar`}>
+        <div className="text-muted-foreground">Loading...</div>
+      </AppShell>
+    );
+  }
+
+  // 2. Group by month (from ISO date)
+  const byMonth = MONTHS.map((m, index) => {
+    const monthNumber = index + 1;
+
+    return {
+      month: m,
+      items: tournaments.filter((t) => {
+        const tMonth = Number(t.startDate.split("-")[1]);
+        return tMonth === monthNumber;
+      }),
+    };
+  }).filter((x) => x.items.length > 0);
 
   return (
     <AppShell title="Schedule" eyebrow={`${year} Season Calendar`}>
@@ -53,14 +67,12 @@ export default function ScheduleClient() {
 
               <div className="grid gap-3 md:grid-cols-2">
                 {items.map((t) => {
-                  const ch = t.championId
-                    ? getPlayer(t.championId)
-                    : null;
+                  const isCompleted = t.status === "Completed";
 
                   return (
                     <Link
-                      key={t.id}
-                      href={`/tournaments/${t.id}?year=${year}`}
+                      key={t._id}
+                      href={`/tournaments/${t._id}?year=${year}`}
                       className="block rounded-lg border border-border/60 bg-card/60 p-4 transition hover:border-court/50"
                     >
                       <div className="flex items-start justify-between">
@@ -88,9 +100,9 @@ export default function ScheduleClient() {
                         </div>
                       </div>
 
-                      {ch && (
+                      {isCompleted && t.championId && (
                         <div className="mt-3 inline-flex items-center gap-1 rounded-sm border border-court/40 bg-court/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-court">
-                          <Trophy className="size-3" /> {ch.shortName}
+                          <Trophy className="size-3" /> Winner
                         </div>
                       )}
                     </Link>
