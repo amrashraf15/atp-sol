@@ -513,11 +513,6 @@ It demonstrates how a niche sports management idea can be elevated into somethin
 ## Author
 
 Built by **Amr Ashraf**
-
-```md
-## Author
-
-**Amr Ashraf**
 - GitHub: [https://github.com/amrashraf15]
 - LinkedIn: [https://www.linkedin.com/in/amr-ashraf-7a6b682b7/]
 ```
